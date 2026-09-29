@@ -9,7 +9,43 @@ const seedData = async () => {
   try {
     const hubCount = await Hub.countDocuments();
     if (hubCount > 0) {
-      console.log('[Seed] Database already contains data. Skipping initial seeding.');
+      console.log('[Seed] Database already contains data. Verifying projects...');
+      const fullnessExists = await Project.findOne({ title: 'FullnessLabs' });
+      const demoUser = await User.findOne();
+      if (!fullnessExists && demoUser) {
+        await Project.create({
+          user: demoUser._id,
+          title: 'FullnessLabs',
+          problemStatement:
+            'Students and beginners often struggle to manage their learning activities, technical skills, career preparation, and projects in one organized platform. Information is usually scattered across different websites and applications, making it difficult to track learning progress, manage projects, and prepare for future career opportunities.',
+          description:
+            'FullnessLabs is a web-based learning and career management platform designed to bring learning, technical skills, career development, and project management into one centralized system. The platform provides users with an organized environment to manage their learning journey, explore technical skills, work on projects, and track their career development. It is built using React.js for the frontend, Node.js and Express.js for the backend, and MongoDB for data storage.',
+          category: 'Web Projects',
+          technologies: ['React.js', 'Node.js', 'Express.js', 'MongoDB'],
+          role: 'C.O',
+          githubUrl: 'https://github.com/chinnu554/',
+          demoUrl: 'https://fullnesslabs.netlify.app/',
+        });
+        console.log('[Seed] FullnessLabs project verified and seeded.');
+      }
+
+      const hub23Exists = await Project.findOne({ title: 'HUB23' });
+      if (!hub23Exists && demoUser) {
+        await Project.create({
+          user: demoUser._id,
+          title: 'HUB23',
+          problemStatement:
+            'Students and users face different challenges in managing their learning, skills, projects, tasks, career activities, and technical resources in one place. Using multiple platforms for different activities can make information difficult to organize and track. HUB23 is designed to provide a centralized digital hub that helps users organize and manage different activities through a single web platform.',
+          description:
+            'HUB23 is a centralized web platform designed to bring multiple useful activities and resources into one simple and organized environment. It helps users manage their learning, technical skills, projects, tasks, career development, and other digital activities from a single platform. The application uses React.js for the frontend, Node.js and Express.js for the backend, and MongoDB for database management. The goal of HUB23 is to provide a flexible and user-friendly platform that can be extended to solve different user and management problems.',
+          category: 'Web Projects',
+          technologies: ['React.js', 'Node.js', 'Express.js', 'MongoDB'],
+          role: 'Developer',
+          githubUrl: 'https://github.com/shaikjailabdin23-dot/',
+          demoUrl: 'https://hub23.lovable.app/',
+        });
+        console.log('[Seed] HUB23 project verified and seeded.');
+      }
       return;
     }
 
@@ -827,75 +863,36 @@ print(f"Predicted Score: {predicted[0]:.1f}") # Output: 105.0 (capped at 100)`,
     await Quiz.insertMany(quizzes);
     console.log(`[Seed] Seeded ${quizzes.length} comprehensive topic quizzes.`);
 
-    // 5. Seed Showcase Projects
-    const sampleProjects = [
-      {
-        user: demoUser._id,
-        title: 'Campus Pulse — Student Collaboration Hub',
-        problemStatement: 'College students struggle to find cross-disciplinary project partners and share academic resources across different departments.',
-        description: 'A full-stack collaborative social platform enabling university students to create project listings, form hackathon teams, and share peer-reviewed study notes.',
-        category: 'Web Projects',
-        technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Socket.io', 'JWT'],
-        role: 'Lead Full Stack Architect',
-        features: [
-          'Real-time peer chat with Socket.io',
-          'Role-based authorization and departmental verification',
-          'Markdown study guide editor with cloud upload',
-          'Full-text search across projects and skills',
-        ],
-        githubUrl: 'https://github.com/alex-dev/campus-pulse',
-        demoUrl: 'https://campus-pulse.demo.dev',
-        challenges: 'Managing real-time WebSocket disconnections on unstable mobile networks.',
-        solutions: 'Implemented client-side reconnection exponential backoff and message receipt queue.',
-        lessonsLearned: 'Mastered event-driven architecture and atomic MongoDB document updates.',
-        outcome: 'Won 1st Place in University Annual Hackathon with over 500 active student signups.',
-      },
-      {
-        user: demoUser._id,
-        title: 'IntelliHealth — AI Disease Risk Predictor',
-        problemStatement: 'Early screening for chronic lifestyle diseases is inaccessible to rural clinics lacking specialized diagnostic equipment.',
-        description: 'An AI-powered diagnostic assistant predicting cardiac and diabetic risks from clinical biomarkers using machine learning regression models.',
-        category: 'AI Projects',
-        technologies: ['Python', 'FastAPI', 'scikit-learn', 'React', 'Docker'],
-        role: 'ML Engineer & Backend Developer',
-        features: [
-          'Interactive risk assessment calculator',
-          'Explainable AI feature importance breakdown using SHAP values',
-          'PDF clinical health report generation',
-          'HIPAA compliant anonymized data pipeline',
-        ],
-        githubUrl: 'https://github.com/alex-dev/intelli-health',
-        demoUrl: 'https://intelli-health.demo.dev',
-        challenges: 'Imbalanced dataset where negative cases outnumbered positive risk cases 10 to 1.',
-        solutions: 'Applied SMOTE (Synthetic Minority Over-sampling Technique) to balance classes and improved recall from 64% to 91%.',
-        lessonsLearned: 'Deepened practical knowledge of ROC-AUC metrics and production model serialization.',
-        outcome: 'Published research paper at Regional Student IEEE Conference.',
-      },
-      {
-        user: demoUser._id,
-        title: 'FinTrack — Smart Personal Finance Tracker',
-        problemStatement: 'Students find it difficult to budget money across semesters and track recurring subscriptions.',
-        description: 'A privacy-first personal budgeting platform with automated category tagging, monthly spending forecasts, and visual savings milestone gauges.',
-        category: 'Personal Projects',
-        technologies: ['React', 'TypeScript', 'Node.js', 'Chart.js', 'MongoDB'],
-        role: 'Solo Creator',
-        features: [
-          'Interactive spending breakdown graphs with pure CSS and canvas',
-          'Automated recurring bill notifications',
-          'CSV bank statement import parser',
-          'Dark mode glassmorphism UI',
-        ],
-        githubUrl: 'https://github.com/alex-dev/fintrack',
-        demoUrl: 'https://fintrack.demo.dev',
-        challenges: 'Handling inconsistent date and currency formats across different international banks.',
-        solutions: 'Built a robust parsing adapter pattern that automatically detects date patterns and currency symbols.',
-        lessonsLearned: 'Enhanced frontend performance optimization and CSS variable theme systems.',
-        outcome: 'Personally used by over 80 students across campus dormitories.',
-      },
-    ];
+    // 5. Seed Flagship Projects: FullnessLabs & HUB23
+    await Project.deleteMany({});
+    await Project.create({
+      user: demoUser._id,
+      title: 'FullnessLabs',
+      problemStatement:
+        'Students and beginners often struggle to manage their learning activities, technical skills, career preparation, and projects in one organized platform. Information is usually scattered across different websites and applications, making it difficult to track learning progress, manage projects, and prepare for future career opportunities.',
+      description:
+        'FullnessLabs is a web-based learning and career management platform designed to bring learning, technical skills, career development, and project management into one centralized system. The platform provides users with an organized environment to manage their learning journey, explore technical skills, work on projects, and track their career development. It is built using React.js for the frontend, Node.js and Express.js for the backend, and MongoDB for data storage.',
+      category: 'Web Projects',
+      technologies: ['React.js', 'Node.js', 'Express.js', 'MongoDB'],
+      role: 'C.O',
+      githubUrl: 'https://github.com/chinnu554/',
+      demoUrl: 'https://fullnesslabs.netlify.app/',
+    });
 
-    await Project.insertMany(sampleProjects);
-    console.log(`[Seed] Seeded ${sampleProjects.length} showcase student projects.`);
+    await Project.create({
+      user: demoUser._id,
+      title: 'HUB23',
+      problemStatement:
+        'Students and users face different challenges in managing their learning, skills, projects, tasks, career activities, and technical resources in one place. Using multiple platforms for different activities can make information difficult to organize and track. HUB23 is designed to provide a centralized digital hub that helps users organize and manage different activities through a single web platform.',
+      description:
+        'HUB23 is a centralized web platform designed to bring multiple useful activities and resources into one simple and organized environment. It helps users manage their learning, technical skills, projects, tasks, career development, and other digital activities from a single platform. The application uses React.js for the frontend, Node.js and Express.js for the backend, and MongoDB for database management. The goal of HUB23 is to provide a flexible and user-friendly platform that can be extended to solve different user and management problems.',
+      category: 'Web Projects',
+      technologies: ['React.js', 'Node.js', 'Express.js', 'MongoDB'],
+      role: 'Developer',
+      githubUrl: 'https://github.com/shaikjailabdin23-dot/',
+      demoUrl: 'https://hub23.lovable.app/',
+    });
+    console.log('[Seed] FullnessLabs & HUB23 projects seeded successfully into Project Hub & Management Hub.');
     console.log('[Seed] Seeding completed successfully!');
   } catch (error) {
     console.error('[Seed Error]:', error);

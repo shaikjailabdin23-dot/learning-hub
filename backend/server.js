@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { connectDB } = require('./config/database');
+const { connectDB, disconnectDB } = require('./config/database');
 const seedData = require('./seed');
 
 // Load environment variables
@@ -9,13 +9,6 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-// Connect to Database & Auto-Seed
-const initServer = async () => {
-  await connectDB();
-  await seedData();
-};
-initServer();
 
 // Middlewares
 app.use(express.json());
@@ -25,8 +18,13 @@ app.use(express.urlencoded({ extended: true }));
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:5173',
   'http://localhost:3000',
-  'http://127.0.0.1:5173',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
   'http://127.0.0.1:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+  'http://127.0.0.1:5175',
 ];
 
 app.use(
@@ -43,6 +41,35 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
+
+// Root landing endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'online',
+    service: 'Hub Learning Website Backend API',
+    version: '1.0.0',
+    health: '/api/health',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      hubs: '/api/hubs',
+      topics: '/api/topics',
+      quizzes: '/api/quizzes',
+      projects: '/api/projects',
+      progress: '/api/progress',
+    },
+    message: 'Backend server is running properly and ready for requests.',
+  });
+});
+
+// API Root summary
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    status: 'online',
+    service: 'Hub Learning Website API',
+    health: '/api/health',
+  });
+});
 
 // Health Check
 app.get('/api/health', (req, res) => {
@@ -81,11 +108,49 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`===============================================`);
-  console.log(`🚀 Hub Learning Backend running on port ${PORT}`);
-  console.log(`📡 API Endpoints available at: http://localhost:${PORT}/api`);
-  console.log(`===============================================`);
-});
+// Start Server after connecting to Database & Auto-Seeding
+let serverInstance = null;
+
+const startServer = async () => {
+  try {
+    await connectDB();
+    await seedData();
+  } catch (err) {
+    console.error('[Database Initialization Error]:', err.message);
+  }
+
+  serverInstance = app.listen(PORT, () => {
+    console.log(`===============================================`);
+    console.log(`🚀 Hub Learning Backend running on port ${PORT}`);
+    console.log(`📡 API Endpoints available at: http://localhost:${PORT}/api`);
+    console.log(`===============================================`);
+  });
+
+  serverInstance.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`\n❌ [PORT ${PORT} IN USE]: Port ${PORT} is already occupied by another running process.`);
+      console.error(`Please close any existing running backend instances or stop the process on port ${PORT}.\n`);
+      process.exit(1);
+    } else {
+      console.error('[Server Error]:', err.message);
+    }
+  });
+};
+
+// Graceful shutdown
+const handleExit = async () => {
+  console.log('\n[Server] Shutting down cleanly...');
+  if (serverInstance) {
+    serverInstance.close();
+  }
+  await disconnectDB();
+  process.exit(0);
+};
+
+process.on('SIGINT', handleExit);
+process.on('SIGTERM', handleExit);
+
+// Execute initialization
+startServer();
 
 module.exports = app;

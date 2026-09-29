@@ -6,9 +6,9 @@ const connectDB = async () => {
   const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/hub_learning';
 
   try {
-    // Attempt connecting to the provided MONGODB_URI with a 4 second timeout
+    // Attempt connecting to the provided MONGODB_URI with a 2 second timeout
     await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 4000,
+      serverSelectionTimeoutMS: 2000,
     });
     console.log(`[Database] MongoDB Connected successfully to: ${uri}`);
   } catch (err) {

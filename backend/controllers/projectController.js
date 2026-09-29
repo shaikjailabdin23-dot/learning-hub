@@ -1,20 +1,33 @@
 const Project = require('../models/Project');
 
+const SAMPLE_PROJECT_TITLES = [
+  'Campus Pulse — Student Collaboration Hub',
+  'IntelliHealth — AI Disease Risk Predictor',
+  'FinTrack — Smart Personal Finance Tracker',
+  'Hub Learning Website — Full Stack Platform',
+  'Atmospheric Weather Intelligence Station',
+];
+
 // @desc    Get projects (all or filtered by user/category)
 // @route   GET /api/projects
 // @access  Public / Optional Auth
 const getProjects = async (req, res) => {
   try {
     const { category, myProjects } = req.query;
-    const filter = {};
+    const filter = {
+      title: { $nin: SAMPLE_PROJECT_TITLES },
+    };
 
-    if (category) {
+    if (category && category !== 'All Categories') {
       filter.category = category;
     }
 
     if (myProjects === 'true' && req.user) {
       filter.user = req.user._id;
     }
+
+    // Clean up sample projects from database
+    await Project.deleteMany({ title: { $in: SAMPLE_PROJECT_TITLES } }).catch(() => {});
 
     const projects = await Project.find(filter)
       .populate('user', 'name college branch')
