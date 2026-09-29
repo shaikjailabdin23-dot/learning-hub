@@ -1,18 +1,17 @@
 import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useProgress } from '../hooks/useProgress';
 
 const navLinks = [
   { name: 'Dashboard', path: '/dashboard', icon: '🏠' },
-  { name: 'Technical Hub', path: '/technical-hub', icon: '🖥️' },
-  { name: 'Skills', path: '/skills-hub', icon: '🛠️' },
+  { name: 'Technical Skills', path: '/technical-hub', icon: '🖥️' },
   { name: 'Coding', path: '/coding-hub', icon: '💻' },
-  { name: 'Career', path: '/career-hub', icon: '🎯' },
+  { name: 'Developer Tools', isAction: true, icon: '🛠️', badge: '18' },
   { name: 'Project Hub', path: '/project-hub', icon: '📁' },
-  { name: 'Manage Projects', path: '/projects', icon: '📋' },
-  { name: 'Analytics & Badges', path: '/progress', icon: '📊' },
-  { name: 'Community', path: '/community', icon: '👥' },
+  { name: 'Management Hub', path: '/projects', icon: '📋' },
+  { name: 'Career', path: '/career-hub', icon: '🎯' },
+  { name: 'Analytics & Budget', path: '/progress', icon: '📊' },
   { name: 'Help Center', path: '/help', icon: '❓' },
   { name: 'Platform Info', path: '/info', icon: 'ℹ️' },
 ];
@@ -20,6 +19,22 @@ const navLinks = [
 const Sidebar = ({ isOpen, onClose }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const { progress } = useProgress();
+  const location = useLocation();
+
+  const isItemActive = (item, isNavActive) => {
+    if (isNavActive) return true;
+    if (item.path === '/technical-hub') {
+      return (
+        location.pathname === '/technical-hub' ||
+        location.pathname === '/skills-hub' ||
+        location.pathname.startsWith('/technical')
+      );
+    }
+    if (item.path === '/projects') {
+      return location.pathname === '/projects' || location.pathname === '/management-hub';
+    }
+    return false;
+  };
 
   const handleLinkClick = () => {
     if (window.innerWidth <= 768 && onClose) {
@@ -79,15 +94,52 @@ const Sidebar = ({ isOpen, onClose }) => {
 
           <ul className="sidebar-menu-list">
             {navLinks.map((item) => (
-              <li key={item.path} className="sidebar-menu-item">
-                <NavLink
-                  to={item.path}
-                  className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-                  onClick={handleLinkClick}
-                >
-                  <span className="sidebar-icon">{item.icon}</span>
-                  <span className="sidebar-label">{item.name}</span>
-                </NavLink>
+              <li key={item.name} className="sidebar-menu-item">
+                {item.isAction ? (
+                  <button
+                    type="button"
+                    className="sidebar-link"
+                    style={{
+                      width: '100%',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      font: 'inherit',
+                    }}
+                    onClick={() => {
+                      window.dispatchEvent(new CustomEvent('open-developer-tools'));
+                      handleLinkClick();
+                    }}
+                  >
+                    <span className="sidebar-icon">{item.icon}</span>
+                    <span className="sidebar-label">{item.name}</span>
+                    {item.badge && (
+                      <span
+                        style={{
+                          marginLeft: 'auto',
+                          fontSize: '0.72rem',
+                          padding: '0.12rem 0.5rem',
+                          borderRadius: '999px',
+                          background: 'rgba(108, 99, 255, 0.25)',
+                          color: '#c4b5fd',
+                          fontWeight: 700,
+                        }}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
+                ) : (
+                  <NavLink
+                    to={item.path}
+                    className={({ isActive }) => `sidebar-link ${isItemActive(item, isActive) ? 'active' : ''}`}
+                    onClick={handleLinkClick}
+                  >
+                    <span className="sidebar-icon">{item.icon}</span>
+                    <span className="sidebar-label">{item.name}</span>
+                  </NavLink>
+                )}
               </li>
             ))}
           </ul>

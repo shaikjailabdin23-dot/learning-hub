@@ -10,110 +10,52 @@ export const projectCategories = [
   'Hackathon Projects',
 ];
 
-export const initialProjectsList = [
-  {
-    _id: 'proj-1',
-    title: 'Hub Learning Website — Full Stack Platform',
-    problemStatement: 'Computer science students lack an integrated environment combining technical theory, soft skills, coding problem-solving, and career placement.',
-    description: 'An enterprise-grade educational SaaS platform empowering college students with 5 specialized hubs, real-time progress analytics, interactive quizzes, and project showcases.',
-    category: 'Web Projects',
-    technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'JWT', 'CSS3'],
-    role: 'Lead Architect & Full Stack Developer',
-    features: [
-      'Pure CSS3 glassmorphism styling with dark theme and dynamic animations',
-      'JWT token authentication with student demographic profile verification',
-      'Interactive topic tutorials and automated quiz evaluation with detailed reviews',
-      'Dynamic progress tracking and project CRUD management',
-    ],
-    githubUrl: 'https://github.com/alex-dev/hub-learning-platform',
-    demoUrl: 'https://hub-learning.dev',
-    challenges: 'Designing a modular architecture without relying on external UI component frameworks.',
-    solutions: 'Built an atomic CSS design system utilizing CSS Grid, Flexbox, and CSS custom variables.',
-    lessonsLearned: 'Mastered REST API security principles, Mongoose indexing, and React Context API state management.',
-    outcome: 'Deployed to production and utilized by over 500 engineering students.',
+export const fullnessLabsProject = {
+  _id: 'fullnesslabs-featured-01',
+  title: 'FullnessLabs',
+  category: 'Web Projects',
+  role: 'C.O',
+  technologies: ['React.js', 'Node.js', 'Express.js', 'MongoDB'],
+  githubUrl: 'https://github.com/chinnu554/',
+  demoUrl: 'https://fullnesslabs.netlify.app/',
+  problemStatement:
+    'Students and beginners often struggle to manage their learning activities, technical skills, career preparation, and projects in one organized platform. Information is usually scattered across different websites and applications, making it difficult to track learning progress, manage projects, and prepare for future career opportunities.',
+  description:
+    'FullnessLabs is a web-based learning and career management platform designed to bring learning, technical skills, career development, and project management into one centralized system. The platform provides users with an organized environment to manage their learning journey, explore technical skills, work on projects, and track their career development. It is built using React.js for the frontend, Node.js and Express.js for the backend, and MongoDB for data storage.',
+  challenges:
+    'Unifying disparate curriculum, project management, and career tracking workflows into an intuitive and synchronized full-stack architecture.',
+  solutions:
+    'Engineered a scalable MERN stack with RESTful APIs, responsive dashboard components, and dynamic user progress tracking.',
+  user: {
+    name: 'C.O (Alex Johnson)',
+    branch: 'Web Engineering',
+    college: 'Global Institute of Technology',
   },
-  {
-    _id: 'proj-2',
-    title: 'Campus Pulse — Student Collaboration Hub',
-    problemStatement: 'College students struggle to find cross-disciplinary project partners and share academic resources across different departments.',
-    description: 'A full-stack collaborative social platform enabling university students to create project listings, form hackathon teams, and share peer-reviewed study notes.',
-    category: 'Web Projects',
-    technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Socket.io', 'JWT'],
-    role: 'Full Stack Developer',
-    features: [
-      'Real-time peer chat with Socket.io',
-      'Role-based authorization and departmental verification',
-      'Markdown study guide editor with cloud upload',
-      'Full-text search across projects and skills',
-    ],
-    githubUrl: 'https://github.com/alex-dev/campus-pulse',
-    demoUrl: 'https://campus-pulse.demo.dev',
-    challenges: 'Managing real-time WebSocket disconnections on unstable mobile networks.',
-    solutions: 'Implemented client-side reconnection exponential backoff and message receipt queue.',
-    lessonsLearned: 'Mastered event-driven architecture and atomic MongoDB document updates.',
-    outcome: 'Won 1st Place in University Annual Hackathon with over 500 active student signups.',
+  createdAt: new Date().toISOString(),
+};
+
+export const hub23Project = {
+  _id: 'hub23-featured-02',
+  title: 'HUB23',
+  category: 'Web Projects',
+  role: 'Developer',
+  technologies: ['React.js', 'Node.js', 'Express.js', 'MongoDB'],
+  githubUrl: 'https://github.com/shaikjailabdin23-dot/',
+  demoUrl: 'https://hub23.lovable.app/',
+  problemStatement:
+    'Students and users face different challenges in managing their learning, skills, projects, tasks, career activities, and technical resources in one place. Using multiple platforms for different activities can make information difficult to organize and track. HUB23 is designed to provide a centralized digital hub that helps users organize and manage different activities through a single web platform.',
+  description:
+    'HUB23 is a centralized web platform designed to bring multiple useful activities and resources into one simple and organized environment. It helps users manage their learning, technical skills, projects, tasks, career development, and other digital activities from a single platform. The application uses React.js for the frontend, Node.js and Express.js for the backend, and MongoDB for database management. The goal of HUB23 is to provide a flexible and user-friendly platform that can be extended to solve different user and management problems.',
+  challenges:
+    'Consolidating fragmented resource trackers, task management, and career readiness tools into an integrated digital hub with high extensibility.',
+  solutions:
+    'Architected a modular full-stack MERN application featuring decoupled service layers, dynamic routing, and an intuitive user interface.',
+  user: {
+    name: 'Developer (Shaik Jailabdin)',
+    branch: 'Computer Science and Engineering',
+    college: 'Global Institute of Technology',
   },
-  {
-    _id: 'proj-3',
-    title: 'IntelliHealth — AI Disease Risk Predictor',
-    problemStatement: 'Early screening for chronic lifestyle diseases is inaccessible to rural clinics lacking specialized diagnostic equipment.',
-    description: 'An AI-powered diagnostic assistant predicting cardiac and diabetic risks from clinical biomarkers using machine learning regression models.',
-    category: 'AI Projects',
-    technologies: ['Python', 'FastAPI', 'scikit-learn', 'React', 'Docker'],
-    role: 'ML Engineer & Backend Developer',
-    features: [
-      'Interactive risk assessment calculator',
-      'Explainable AI feature importance breakdown using SHAP values',
-      'PDF clinical health report generation',
-      'HIPAA compliant anonymized data pipeline',
-    ],
-    githubUrl: 'https://github.com/alex-dev/intelli-health',
-    demoUrl: 'https://intelli-health.demo.dev',
-    challenges: 'Imbalanced dataset where negative cases outnumbered positive risk cases 10 to 1.',
-    solutions: 'Applied SMOTE (Synthetic Minority Over-sampling Technique) to balance classes and improved recall from 64% to 91%.',
-    lessonsLearned: 'Deepened practical knowledge of ROC-AUC metrics and production model serialization.',
-    outcome: 'Published research paper at Regional Student IEEE Conference.',
-  },
-  {
-    _id: 'proj-4',
-    title: 'FinTrack — Smart Personal Finance Tracker',
-    problemStatement: 'Students find it difficult to budget money across semesters and track recurring subscriptions.',
-    description: 'A privacy-first personal budgeting platform with automated category tagging, monthly spending forecasts, and visual savings milestone gauges.',
-    category: 'Personal Projects',
-    technologies: ['React', 'JavaScript', 'Node.js', 'MongoDB', 'CSS3'],
-    role: 'Solo Creator',
-    features: [
-      'Interactive spending breakdown graphs with pure CSS',
-      'Automated recurring bill notifications',
-      'CSV bank statement import parser',
-      'Dark mode glassmorphism UI',
-    ],
-    githubUrl: 'https://github.com/alex-dev/fintrack',
-    demoUrl: 'https://fintrack.demo.dev',
-    challenges: 'Handling inconsistent date and currency formats across different international banks.',
-    solutions: 'Built a robust parsing adapter pattern that automatically detects date patterns and currency symbols.',
-    lessonsLearned: 'Enhanced frontend performance optimization and CSS variable theme systems.',
-    outcome: 'Personally used by over 80 students across campus dormitories.',
-  },
-  {
-    _id: 'proj-5',
-    title: 'Atmospheric Weather Intelligence Station',
-    problemStatement: 'Existing weather applications are bloated with ads and fail to provide hyper-local air quality index (AQI) alerts for outdoor athletics.',
-    description: 'A responsive weather dashboard fetching real-time OpenWeather and AQI metrics with interactive radar maps and 7-day precipitation forecasts.',
-    category: 'Academic Projects',
-    technologies: ['React', 'Vite', 'OpenWeatherMap API', 'Vanilla CSS3'],
-    role: 'Frontend Developer',
-    features: [
-      'Geolocation detection with manual city search autocomplete',
-      'Dynamic weather condition backgrounds (rain, snow, clear sky)',
-      'Hourly temperature trend sparklines',
-      'UV Index and Air Quality health advisory cards',
-    ],
-    githubUrl: 'https://github.com/alex-dev/weather-station',
-    demoUrl: 'https://weather-station.demo.dev',
-    challenges: 'Managing API rate limiting and handling intermittent offline network conditions.',
-    solutions: 'Implemented LocalStorage client caching with 15-minute TTL cache invalidation.',
-    lessonsLearned: 'Mastered browser Geolocation API and asynchronous error recovery patterns.',
-    outcome: 'Awarded Grade A+ in College Web Technologies Laboratory Course.',
-  },
-];
+  createdAt: new Date().toISOString(),
+};
+
+export const initialProjectsList = [fullnessLabsProject, hub23Project];

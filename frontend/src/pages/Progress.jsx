@@ -10,15 +10,6 @@ const Progress = () => {
   const overallPct = progress?.overallPercentage || 68;
   const hubStats = progress?.hubStats || {};
 
-  const badges = [
-    { title: 'Fast Starter', icon: '🚀', desc: 'Completed first 5 curricula topics', unlocked: true },
-    { title: 'Algorithmic Thinker', icon: '⚡', desc: 'Solved 10+ DSA problems', unlocked: true },
-    { title: 'Quiz Whiz', icon: '🎯', desc: 'Achieved 80%+ on 5 quizzes', unlocked: true },
-    { title: 'Full Stack Builder', icon: '🛠️', desc: 'Published 3 capstone projects', unlocked: true },
-    { title: 'Consistency Champion', icon: '🔥', desc: 'Maintained 7-day study streak', unlocked: true },
-    { title: 'Placement Ready', icon: '💼', desc: 'Completed ATS resume & interview track', unlocked: false },
-  ];
-
   return (
     <div className="progress-dashboard animate-fade-in" style={{ paddingBottom: '3rem' }}>
       {/* Top Banner with Circular Gauge */}
@@ -158,37 +149,6 @@ const Progress = () => {
               {hubStats.project?.completed || 3} of {hubStats.project?.total || 5} capstones published
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Badges & Achievements Section */}
-      <section>
-        <div className="section-header">
-          <h2 className="section-title">Student Badges & Achievements</h2>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
-          {badges.map((b, idx) => (
-            <div
-              key={idx}
-              className="glass-card"
-              style={{
-                padding: '1.5rem',
-                textAlign: 'center',
-                opacity: b.unlocked ? 1 : 0.45,
-                border: b.unlocked ? '1px solid rgba(108, 99, 255, 0.4)' : '1px solid var(--border)',
-              }}
-            >
-              <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>{b.icon}</div>
-              <h4 style={{ fontSize: '1.1rem', marginBottom: '0.35rem' }}>{b.title}</h4>
-              <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{b.desc}</p>
-              <div style={{ marginTop: '0.75rem' }}>
-                <span className={`badge ${b.unlocked ? 'badge-beginner' : 'badge-intermediate'}`}>
-                  {b.unlocked ? '✓ Unlocked' : 'In Progress'}
-                </span>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 

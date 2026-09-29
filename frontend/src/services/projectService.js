@@ -1,24 +1,66 @@
 import api from './api';
 import { initialProjectsList } from '../data/projectData';
 
+const SAMPLE_TITLES = [
+  'Campus Pulse — Student Collaboration Hub',
+  'IntelliHealth — AI Disease Risk Predictor',
+  'FinTrack — Smart Personal Finance Tracker',
+  'Hub Learning Website — Full Stack Platform',
+  'Atmospheric Weather Intelligence Station',
+];
+const SAMPLE_IDS = ['proj-1', 'proj-2', 'proj-3', 'proj-4', 'proj-5'];
+
+const filterOutSamples = (list) => {
+  if (!Array.isArray(list)) return [];
+  return list.filter(
+    (p) => !SAMPLE_IDS.includes(p._id) && !SAMPLE_TITLES.includes(p.title)
+  );
+};
+
 const getStoredProjects = () => {
   const stored = localStorage.getItem('hub_student_projects');
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      const cleaned = filterOutSamples(parsed);
+      let changed = false;
+      initialProjectsList.forEach((initProj) => {
+        const exists = cleaned.some(
+          (p) =>
+            p.title?.toLowerCase() === initProj.title.toLowerCase() ||
+            p._id === initProj._id
+        );
+        if (!exists) {
+          cleaned.push(initProj);
+          changed = true;
+        }
+      });
+      if (changed) {
+        localStorage.setItem('hub_student_projects', JSON.stringify(cleaned));
+      }
+      return cleaned;
     } catch (e) {
-      return initialProjectsList;
+      return [...initialProjectsList];
     }
   }
   localStorage.setItem('hub_student_projects', JSON.stringify(initialProjectsList));
-  return initialProjectsList;
+  return [...initialProjectsList];
 };
 
 export const getProjects = async (params = {}) => {
   try {
     const response = await api.get('/projects', { params });
-    if (response.data && response.data.data && response.data.data.length > 0) {
-      return response.data.data;
+    if (response.data && Array.isArray(response.data.data)) {
+      const serverProjects = filterOutSamples(response.data.data);
+      if (serverProjects.length > 0) {
+        return serverProjects;
+      }
+      // If server returned 0, fallback to default initial projects
+      let list = getStoredProjects();
+      if (params.category && params.category !== 'All Categories') {
+        list = list.filter((p) => p.category === params.category);
+      }
+      return list;
     }
     return getStoredProjects();
   } catch (error) {

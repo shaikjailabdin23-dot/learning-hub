@@ -118,9 +118,9 @@ const Projects = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '2.2rem', marginBottom: '0.25rem' }}>Project Showcase Workspace</h1>
+          <h1 style={{ fontSize: '2.2rem', marginBottom: '0.25rem' }}>Management Hub — Projects Workspace</h1>
           <p style={{ color: 'var(--text-secondary)' }}>
-            Manage, publish, and present your software engineering capstones and open-source contributions.
+            Manage, publish, track, and showcase your software engineering capstones and web platforms.
           </p>
         </div>
 
@@ -156,15 +156,31 @@ const Projects = () => {
           <div className="spinner"></div>
           <p>Loading projects...</p>
         </div>
+      ) : projects.length === 0 ? (
+        <div
+          className="glass-card"
+          style={{
+            padding: '3.5rem 2rem',
+            textAlign: 'center',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px dashed var(--border)',
+          }}
+        >
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📁</div>
+          <h3 style={{ fontSize: '1.4rem', marginBottom: '0.6rem' }}>No Projects Yet</h3>
+          <p style={{ color: 'var(--text-secondary)', maxWidth: '500px', margin: '0 auto 1.5rem', lineHeight: 1.6 }}>
+            Your engineering portfolio workspace is clean and ready. Add your first capstone project to publish it to the Project Hub!
+          </p>
+          <button type="button" className="btn-primary" onClick={openCreateModal}>
+            + Create New Project 🚀
+          </button>
+        </div>
       ) : filtered.length === 0 ? (
         <div className="glass-card" style={{ padding: '3.5rem', textAlign: 'center' }}>
           <h3>No projects found in this view</h3>
           <p style={{ color: 'var(--text-secondary)', margin: '1rem 0' }}>
-            Click "Create New Project" to add your first capstone project to your engineering portfolio!
+            Try adjusting your search query or selected category.
           </p>
-          <button type="button" className="btn-primary" onClick={openCreateModal}>
-            Add Project Now
-          </button>
         </div>
       ) : (
         <div className="topics-grid">

@@ -2,14 +2,23 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useProgress } from '../hooks/useProgress';
+import DeveloperToolsMegaMenu from './DeveloperToolsMegaMenu';
 
 const Navbar = ({ onToggleSidebar }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const { progress } = useProgress();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [devToolsOpen, setDevToolsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+
+  // Listen for custom open-developer-tools event from sidebar or other links
+  useEffect(() => {
+    const handleOpenDevTools = () => setDevToolsOpen(true);
+    window.addEventListener('open-developer-tools', handleOpenDevTools);
+    return () => window.removeEventListener('open-developer-tools', handleOpenDevTools);
+  }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -39,34 +48,52 @@ const Navbar = ({ onToggleSidebar }) => {
   const initialLetter = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
 
   return (
-    <header className="navbar">
-      <div className="navbar-container">
-        {/* Left: Mobile Drawer Button & Search Bar */}
-        <div className="navbar-left">
-          <button
-            type="button"
-            className="hamburger-btn"
-            onClick={onToggleSidebar}
-            aria-label="Toggle navigation drawer"
-            title="Open Sidebar Navigation"
-          >
-            <span className="hamburger-icon">☰</span>
-          </button>
+    <>
+      <header className="navbar">
+        <div className="navbar-container">
+          {/* Left: Mobile Drawer Button & Search Bar */}
+          <div className="navbar-left">
+            <button
+              type="button"
+              className="hamburger-btn"
+              onClick={onToggleSidebar}
+              aria-label="Toggle navigation drawer"
+              title="Open Sidebar Navigation"
+            >
+              <span className="hamburger-icon">☰</span>
+            </button>
 
-          <form onSubmit={handleSearchSubmit} className="navbar-search-form">
-            <span className="navbar-search-icon">🔍</span>
-            <input
-              type="text"
-              className="navbar-search-input"
-              placeholder="Search curricula, algorithms, topics..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </form>
-        </div>
+            <form onSubmit={handleSearchSubmit} className="navbar-search-form">
+              <span className="navbar-search-icon">🔍</span>
+              <input
+                type="text"
+                className="navbar-search-input"
+                placeholder="Search curricula, algorithms, topics..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
+          </div>
 
-        {/* Right: Streak & Profile / Authentication */}
-        <div className="navbar-right">
+          {/* Center: Developer Tools Mega-Menu Trigger */}
+          <div className="navbar-center">
+            <button
+              type="button"
+              className={`nav-dev-tools-btn ${devToolsOpen ? 'active' : ''}`}
+              onClick={() => setDevToolsOpen((prev) => !prev)}
+              aria-expanded={devToolsOpen}
+              aria-label="Toggle Developer Tools Menu"
+              title="Developer Tools: 18 Essential Technologies"
+            >
+              <span className="dev-tools-icon">🛠️</span>
+              <span className="dev-tools-label">Developer Tools</span>
+              <span className="dev-tools-badge">18</span>
+              <span className="dev-tools-arrow">{devToolsOpen ? '▲' : '▼'}</span>
+            </button>
+          </div>
+
+          {/* Right: Streak & Profile / Authentication */}
+          <div className="navbar-right">
           <div className="streak-pill" title="Daily Learning Streak">
             <span>🔥</span>
             <span className="streak-count">{progress?.streak || 7} Days</span>
@@ -107,21 +134,14 @@ const Navbar = ({ onToggleSidebar }) => {
                     className="dropdown-item"
                     onClick={() => setDropdownOpen(false)}
                   >
-                    <span>📈</span> Analytics & Badges
+                    <span>📈</span> Analytics & Budget
                   </Link>
                   <Link
                     to="/projects"
                     className="dropdown-item"
                     onClick={() => setDropdownOpen(false)}
                   >
-                    <span>🚀</span> Manage Projects
-                  </Link>
-                  <Link
-                    to="/community"
-                    className="dropdown-item"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    <span>💬</span> Community
+                    <span>🚀</span> Management Hub
                   </Link>
 
                   <hr className="dropdown-divider" />
@@ -149,7 +169,14 @@ const Navbar = ({ onToggleSidebar }) => {
         </div>
       </div>
     </header>
-  );
+
+    {/* Developer Tools Mega-Menu */}
+    <DeveloperToolsMegaMenu
+      isOpen={devToolsOpen}
+      onClose={() => setDevToolsOpen(false)}
+    />
+  </>
+);
 };
 
 export default Navbar;

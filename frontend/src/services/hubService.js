@@ -53,7 +53,7 @@ const defaultHubs = [
     category: 'Applied Building',
     topicsCount: 8,
     icon: 'rocket',
-    color: '#ec4899',
+    color: '#e7348eff',
     gradient: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)',
   },
 ];

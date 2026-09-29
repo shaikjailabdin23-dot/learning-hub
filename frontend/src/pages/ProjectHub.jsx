@@ -128,9 +128,41 @@ const ProjectHub = () => {
           <div className="spinner"></div>
           <p>Loading projects...</p>
         </div>
+      ) : projects.length === 0 ? (
+        <div
+          className="glass-card"
+          style={{
+            padding: '3.5rem 2rem',
+            textAlign: 'center',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px dashed var(--border)',
+          }}
+        >
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚀</div>
+          <h3 style={{ fontSize: '1.4rem', marginBottom: '0.6rem', color: 'var(--text-primary)' }}>
+            Project Hub is Ready for Your Projects
+          </h3>
+          <p
+            style={{
+              color: 'var(--text-secondary)',
+              maxWidth: '540px',
+              margin: '0 auto 1.5rem',
+              lineHeight: 1.6,
+            }}
+          >
+            All default sample projects have been removed. This space is exclusively reserved for your own engineering capstones, full-stack apps, and portfolio projects.
+          </p>
+          <Link
+            to="/projects"
+            className="btn-primary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.6rem' }}
+          >
+            <span>+</span> Add Your First Project
+          </Link>
+        </div>
       ) : filteredProjects.length === 0 ? (
         <div className="glass-card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-          <h3>No projects found</h3>
+          <h3>No matching projects found</h3>
           <p style={{ marginTop: '0.5rem' }}>Try clearing your search query or choosing another category.</p>
         </div>
       ) : (

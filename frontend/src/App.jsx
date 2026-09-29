@@ -54,6 +54,7 @@ function AppLayout() {
 
             {/* Curricula Hubs */}
             <Route path="/technical-hub" element={<TechnicalHub />} />
+            <Route path="/technical-skills" element={<Navigate to="/technical-hub" replace />} />
             <Route path="/skills-hub" element={<SkillsHub />} />
             <Route path="/coding-hub" element={<CodingHub />} />
             <Route path="/career-hub" element={<CareerHub />} />
@@ -72,6 +73,7 @@ function AppLayout() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/management-hub" element={<Navigate to="/projects" replace />} />
             <Route
               path="/progress"
               element={
