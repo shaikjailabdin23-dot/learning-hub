@@ -6,20 +6,28 @@ A full-stack learning and student tracking platform featuring technical curricul
 
 ## ⚡ Quick Start
 
-### 1. Start the Backend Server (Port 5000)
+### Option A: Run Both Together (Recommended)
+From the project root:
 ```bash
-cd backend
-npm install
 npm run dev
+```
+> Runs both the backend API and frontend Vite server concurrently in a single terminal.
+
+---
+
+### Option B: Run Individually in Separate Terminals
+
+#### 1. Start the Backend Server (Port 5000)
+```bash
+npm run dev:backend
+# or: cd backend && npm run dev
 ```
 > The backend runs on `http://localhost:5000` with automated in-memory MongoDB and auto-seeding.
 
-### 2. Start the Frontend Dev Server (Port 5173 / 5174)
-In a separate terminal:
+#### 2. Start the Frontend Dev Server (Port 5173 / 5174)
 ```bash
-cd frontend
-npm install
-npm run dev
+npm run dev:frontend
+# or: cd frontend && npm run dev
 ```
 > Access the application in your browser at `http://localhost:5173` (or `http://localhost:5174` if 5173 is occupied).
 
