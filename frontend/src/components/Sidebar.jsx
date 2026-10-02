@@ -7,7 +7,7 @@ const navLinks = [
   { name: 'Dashboard', path: '/dashboard', icon: '🏠' },
   { name: 'Technical Skills', path: '/technical-hub', icon: '🖥️' },
   { name: 'Coding', path: '/coding-hub', icon: '💻' },
-  { name: 'Developer Tools', isAction: true, icon: '🛠️', badge: '18' },
+  { name: 'Developer Tools', isAction: true, icon: '🛠️', badge: '16' },
   { name: 'Project Hub', path: '/project-hub', icon: '📁' },
   { name: 'Management Hub', path: '/projects', icon: '📋' },
   { name: 'Career', path: '/career-hub', icon: '🎯' },
@@ -17,17 +17,29 @@ const navLinks = [
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { progress } = useProgress();
   const location = useLocation();
+  const [devToolsActive, setDevToolsActive] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleStateChange = (e) => {
+      setDevToolsActive(Boolean(e.detail?.isOpen));
+    };
+    window.addEventListener('dev-tools-state-change', handleStateChange);
+    return () => window.removeEventListener('dev-tools-state-change', handleStateChange);
+  }, []);
 
   const isItemActive = (item, isNavActive) => {
+    if (item.isAction) return devToolsActive;
     if (isNavActive) return true;
     if (item.path === '/technical-hub') {
       return (
         location.pathname === '/technical-hub' ||
         location.pathname === '/skills-hub' ||
-        location.pathname.startsWith('/technical')
+        location.pathname.startsWith('/technical') ||
+        location.pathname.startsWith('/topic') ||
+        location.pathname.startsWith('/quiz')
       );
     }
     if (item.path === '/projects') {
@@ -98,7 +110,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 {item.isAction ? (
                   <button
                     type="button"
-                    className="sidebar-link"
+                    className={`sidebar-link ${devToolsActive ? 'active' : ''}`}
                     style={{
                       width: '100%',
                       background: 'transparent',
@@ -138,6 +150,21 @@ const Sidebar = ({ isOpen, onClose }) => {
                   >
                     <span className="sidebar-icon">{item.icon}</span>
                     <span className="sidebar-label">{item.name}</span>
+                    {item.path === '/projects' && isAdmin && (
+                      <span
+                        style={{
+                          marginLeft: 'auto',
+                          fontSize: '0.68rem',
+                          padding: '0.1rem 0.45rem',
+                          borderRadius: '999px',
+                          background: 'rgba(236, 72, 153, 0.25)',
+                          color: '#f472b6',
+                          fontWeight: 700,
+                        }}
+                      >
+                        Admin
+                      </span>
+                    )}
                   </NavLink>
                 )}
               </li>
@@ -150,15 +177,42 @@ const Sidebar = ({ isOpen, onClose }) => {
           {isAuthenticated ? (
             <div className="sidebar-profile-card">
               <div className="sidebar-user-row">
-                <div className="sidebar-user-avatar">{initialLetter}</div>
-                <div className="sidebar-user-details">
-                  <div className="sidebar-user-name">{user?.name || 'Student'}</div>
-                  <div className="sidebar-user-role">{user?.branch || user?.email || 'Engineering Student'}</div>
+                <div className="sidebar-user-avatar" style={user?.role === 'admin' ? { background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)' } : {}}>
+                  {user?.role === 'admin' ? '🛡️' : initialLetter}
                 </div>
-                <div className="sidebar-streak-tag" title="Learning Streak">
-                  🔥 {progress?.streak || 7}d
+                <div className="sidebar-user-details">
+                  <div className="sidebar-user-name">{user?.name || (user?.role === 'admin' ? 'Administrator' : 'Student')}</div>
+                  <div className="sidebar-user-role" style={user?.role === 'admin' ? { color: '#f472b6', fontWeight: 600 } : {}}>
+                    {user?.role === 'admin' ? 'Platform Administrator' : (user?.branch || 'Engineering Student')}
+                  </div>
+                </div>
+                <div className="sidebar-streak-tag" title={user?.role === 'admin' ? 'Admin Full Access' : 'Learning Streak'}>
+                  {user?.role === 'admin' ? '👑 Admin' : `🔥 ${progress?.streak || 7}d`}
                 </div>
               </div>
+              {isAdmin && (
+                <Link
+                  to="/admin/dashboard"
+                  className="sidebar-link"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(139, 92, 246, 0.25) 100%)',
+                    border: '1px solid rgba(236, 72, 153, 0.4)',
+                    color: '#f472b6',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    padding: '0.45rem 0.75rem',
+                    borderRadius: 'var(--radius-sm)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                  }}
+                  onClick={handleLinkClick}
+                >
+                  <span>🛡️</span>
+                  <span>Admin Dashboard</span>
+                  <span style={{ marginLeft: 'auto', fontSize: '0.65rem', background: '#ec4899', color: '#fff', padding: '0.1rem 0.35rem', borderRadius: '4px' }}>LIVE</span>
+                </Link>
+              )}
               <button
                 type="button"
                 className="sidebar-logout-btn"

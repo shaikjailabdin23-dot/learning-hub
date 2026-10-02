@@ -24,6 +24,7 @@ import Progress from './pages/Progress';
 import Help from './pages/Help';
 import Community from './pages/Community';
 import Info from './pages/Info';
+import AdminDashboard from './pages/AdminDashboard';
 
 function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -64,11 +65,35 @@ function AppLayout() {
             <Route path="/topic/:topicSlug" element={<Topic />} />
             <Route path="/quiz/:topicSlug" element={<Quiz />} />
 
-            {/* Student Dedicated CRUD & Progress Workspaces */}
+            {/* Admin Dedicated Dashboard & Workspace */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/projects"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute adminOnly={true}>
+                  <Projects />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/projects"
+              element={
+                <ProtectedRoute adminOnly={true}>
                   <Projects />
                 </ProtectedRoute>
               }
@@ -91,9 +116,8 @@ function AppLayout() {
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <Footer />
         </main>
-
-        <Footer />
       </div>
     </div>
   );

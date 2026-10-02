@@ -10,10 +10,10 @@ const TopicCard = ({ topic, hubSlug = 'technical' }) => {
       : 'badge-advanced';
 
   return (
-    <Link to={`/topic/${topic.slug || topic.id}`} className="topic-card">
+    <div className="topic-card">
       <div className="topic-card-header">
         <span className={`badge ${diffClass}`}>{topic.difficulty || 'All Levels'}</span>
-        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+        <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
           ⏱️ {topic.estimatedTime || '20 mins'}
         </span>
       </div>
@@ -22,16 +22,24 @@ const TopicCard = ({ topic, hubSlug = 'technical' }) => {
       <p className="topic-card-desc">{topic.description}</p>
 
       <div className="topic-card-footer">
-        <span style={{ color: 'var(--accent-secondary)', fontWeight: 500 }}>
+        <span style={{ color: 'var(--accent-secondary)', fontSize: '0.84rem', fontWeight: 600 }}>
           {topic.category}
         </span>
-        {topic.isCompleted ? (
-          <span className="topic-completed-indicator">✓ Completed</span>
-        ) : (
-          <span style={{ color: 'var(--text-muted)' }}>Start Lesson →</span>
-        )}
+        <Link
+          to={`/topic/${topic.slug || topic.id}`}
+          className="btn-primary"
+          style={{
+            padding: '0.45rem 1rem',
+            fontSize: '0.84rem',
+            borderRadius: 'var(--radius-sm)',
+            textDecoration: 'none',
+          }}
+          aria-label={`Start lesson on ${topic.title}`}
+        >
+          {topic.isCompleted ? '✓ Review Lesson' : 'Start Lesson →'}
+        </Link>
       </div>
-    </Link>
+    </div>
   );
 };
 

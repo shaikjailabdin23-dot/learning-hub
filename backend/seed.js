@@ -11,10 +11,10 @@ const seedData = async () => {
     if (hubCount > 0) {
       console.log('[Seed] Database already contains data. Verifying projects...');
       const fullnessExists = await Project.findOne({ title: 'FullnessLabs' });
-      const demoUser = await User.findOne();
-      if (!fullnessExists && demoUser) {
+      const existingUser = await User.findOne();
+      if (!fullnessExists && existingUser) {
         await Project.create({
-          user: demoUser._id,
+          user: existingUser._id,
           title: 'FullnessLabs',
           problemStatement:
             'Students and beginners often struggle to manage their learning activities, technical skills, career preparation, and projects in one organized platform. Information is usually scattered across different websites and applications, making it difficult to track learning progress, manage projects, and prepare for future career opportunities.',
@@ -30,9 +30,9 @@ const seedData = async () => {
       }
 
       const hub23Exists = await Project.findOne({ title: 'HUB23' });
-      if (!hub23Exists && demoUser) {
+      if (!hub23Exists && existingUser) {
         await Project.create({
-          user: demoUser._id,
+          user: existingUser._id,
           title: 'HUB23',
           problemStatement:
             'Students and users face different challenges in managing their learning, skills, projects, tasks, career activities, and technical resources in one place. Using multiple platforms for different activities can make information difficult to organize and track. HUB23 is designed to provide a centralized digital hub that helps users organize and manage different activities through a single web platform.',
@@ -45,6 +45,109 @@ const seedData = async () => {
           demoUrl: 'https://hub23.lovable.app/',
         });
         console.log('[Seed] HUB23 project verified and seeded.');
+      }
+
+      const designatedAdmin = await User.findOne({ email: 'shaikjailabdin23@gmail.com' });
+      if (!designatedAdmin) {
+        const salt = await bcrypt.genSalt(10);
+        const adminPass = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', salt);
+        await User.create({
+          name: 'Shaik Jailabdin',
+          email: 'shaikjailabdin23@gmail.com',
+          password: adminPass,
+          role: 'admin',
+          college: 'Hub Learning Administration',
+          branch: 'System Architecture & Engineering',
+          year: 'Faculty / Admin',
+          semester: 'Staff',
+          streak: 30,
+          loginCount: 5,
+          modulesUsed: ['Admin Dashboard', 'Management Hub', 'Project Hub', 'Technical Hub'],
+        });
+        console.log('[Seed] Designated Admin verified and seeded: shaikjailabdin23@gmail.com');
+      }
+
+      const adminExists = await User.findOne({ email: 'admin@hub.edu' });
+      if (!adminExists) {
+        const salt = await bcrypt.genSalt(10);
+        const adminPassword = await bcrypt.hash('admin123', salt);
+        await User.create({
+          name: 'Platform Administrator',
+          email: 'admin@hub.edu',
+          password: adminPassword,
+          role: 'admin',
+          college: 'Hub Learning Administration',
+          branch: 'System Engineering',
+          year: 'Faculty / Admin',
+          semester: 'Staff',
+          streak: 30,
+          loginCount: 3,
+          modulesUsed: ['Admin Dashboard', 'Project Hub'],
+        });
+        console.log('[Seed] Admin user verified and seeded: admin@hub.edu');
+      }
+
+      // Seed initial real activities if Activity collection is empty
+      const Activity = require('./models/Activity');
+      const actCount = await Activity.countDocuments();
+      if (actCount === 0 && existingUser) {
+        await Activity.insertMany([
+          {
+            user: existingUser._id,
+            userName: existingUser.name,
+            userEmail: existingUser.email,
+            type: 'login',
+            module: 'Auth',
+            details: { loginCount: 1 },
+            createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+          },
+          {
+            user: existingUser._id,
+            userName: existingUser.name,
+            userEmail: existingUser.email,
+            type: 'technical_hub',
+            module: 'Technical Hub',
+            details: { topic: 'Programming Fundamentals' },
+            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+          },
+          {
+            user: existingUser._id,
+            userName: existingUser.name,
+            userEmail: existingUser.email,
+            type: 'coding_hub',
+            module: 'Coding Hub',
+            details: { problem: 'Two Sum', status: 'Accepted' },
+            createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+          },
+          {
+            user: existingUser._id,
+            userName: existingUser.name,
+            userEmail: existingUser.email,
+            type: 'developer_tools',
+            module: 'Developer Tools',
+            details: { tool: 'VS Code' },
+            createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
+          },
+          {
+            user: existingUser._id,
+            userName: existingUser.name,
+            userEmail: existingUser.email,
+            type: 'project_view',
+            module: 'Project Hub',
+            details: { projectTitle: 'HUB23' },
+            createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
+          },
+          {
+            user: existingUser._id,
+            userName: existingUser.name,
+            userEmail: existingUser.email,
+            type: 'career_hub',
+            module: 'Career Hub',
+            details: { selectedCareer: 'Software Developer' },
+            createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
+          },
+        ]);
+        console.log('[Seed] Initial activity records seeded for analytics.');
       }
       return;
     }

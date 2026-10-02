@@ -21,14 +21,25 @@ const DeveloperToolsMegaMenu = ({ isOpen, onClose }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose, activeToolDetails]);
 
-  // Prevent background body scroll when open on mobile
+  // Prevent background body and main-content scroll when open
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('dev-menu-open');
+      const mainEl = document.querySelector('.main-content');
+      if (mainEl) mainEl.style.overflow = 'hidden';
+      window.dispatchEvent(new CustomEvent('dev-tools-state-change', { detail: { isOpen: true } }));
     } else {
       document.body.classList.remove('dev-menu-open');
+      const mainEl = document.querySelector('.main-content');
+      if (mainEl) mainEl.style.overflow = '';
+      window.dispatchEvent(new CustomEvent('dev-tools-state-change', { detail: { isOpen: false } }));
     }
-    return () => document.body.classList.remove('dev-menu-open');
+    return () => {
+      document.body.classList.remove('dev-menu-open');
+      const mainEl = document.querySelector('.main-content');
+      if (mainEl) mainEl.style.overflow = '';
+      window.dispatchEvent(new CustomEvent('dev-tools-state-change', { detail: { isOpen: false } }));
+    };
   }, [isOpen]);
 
   // Compute category counts

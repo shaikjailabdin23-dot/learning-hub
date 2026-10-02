@@ -56,4 +56,15 @@ const optionalAuth = async (req, res, next) => {
   next();
 };
 
-module.exports = { protect, optionalAuth };
+// Admin only middleware: checks req.user role is admin
+const adminOnly = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    return next();
+  }
+  return res.status(403).json({
+    success: false,
+    message: 'Access denied: Platform Administrator privileges required.',
+  });
+};
+
+module.exports = { protect, optionalAuth, adminOnly };

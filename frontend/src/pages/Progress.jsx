@@ -19,7 +19,7 @@ const Progress = () => {
             Academic Milestone Tracker
           </span>
           <h1 style={{ fontSize: '2.4rem', marginBottom: '0.75rem' }}>
-            {user?.name || 'Student'}’s Analytics
+            {user?.name || 'Student'}’s Analytics & Budget
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.6 }}>
             Track your mastery across all five engineering hubs in real-time. Consistent daily practice
@@ -147,6 +147,64 @@ const Progress = () => {
             <ProgressBar value={hubStats.project?.percentage || 60} height="7px" gradient="linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)" />
             <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
               {hubStats.project?.completed || 3} of {hubStats.project?.total || 5} capstones published
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Student Engineering & Learning Resource Budget */}
+      <section style={{ marginTop: '2rem' }}>
+        <div className="section-header">
+          <div>
+            <h2 className="section-title">Student Resource & Learning Budget</h2>
+            <p className="section-subtitle">
+              Manage your academic study hours, developer tools quota, and deployment resources.
+            </p>
+          </div>
+        </div>
+
+        <div className="hub-progress-grid">
+          <div className="hub-progress-card">
+            <div className="hub-progress-card-header">
+              <span className="hub-progress-name">⏱️ Weekly Study Time Budget</span>
+              <span className="hub-progress-pct" style={{ color: 'var(--accent-secondary)' }}>80%</span>
+            </div>
+            <ProgressBar value={80} height="7px" gradient="var(--accent-gradient)" />
+            <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              24.0 of 30.0 targeted study hours completed this week
+            </div>
+          </div>
+
+          <div className="hub-progress-card">
+            <div className="hub-progress-card-header">
+              <span className="hub-progress-name">☁️ Cloud Sandbox & Deployments</span>
+              <span className="hub-progress-pct" style={{ color: '#4ade80' }}>85%</span>
+            </div>
+            <ProgressBar value={85} height="7px" gradient="linear-gradient(135deg, #22c55e 0%, #16a34a 100%)" />
+            <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              $42.50 of $50.00 student cloud credits remaining
+            </div>
+          </div>
+
+          <div className="hub-progress-card">
+            <div className="hub-progress-card-header">
+              <span className="hub-progress-name">🤖 AI Assistant & API Tokens</span>
+              <span className="hub-progress-pct" style={{ color: '#a78bfa' }}>74%</span>
+            </div>
+            <ProgressBar value={74} height="7px" gradient="linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)" />
+            <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              185,000 of 250,000 monthly educational tokens active
+            </div>
+          </div>
+
+          <div className="hub-progress-card">
+            <div className="hub-progress-card-header">
+              <span className="hub-progress-name">🚀 Capstone Portfolio Target</span>
+              <span className="hub-progress-pct" style={{ color: '#ec4899' }}>75%</span>
+            </div>
+            <ProgressBar value={75} height="7px" gradient="linear-gradient(135deg, #ec4899 0%, #db2777 100%)" />
+            <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              3 of 4 planned capstone portfolio projects published
             </div>
           </div>
         </div>

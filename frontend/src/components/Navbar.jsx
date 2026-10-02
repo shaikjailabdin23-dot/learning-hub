@@ -13,11 +13,16 @@ const Navbar = ({ onToggleSidebar }) => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // Listen for custom open-developer-tools event from sidebar or other links
+  // Listen for custom open-developer-tools and state change events
   useEffect(() => {
     const handleOpenDevTools = () => setDevToolsOpen(true);
+    const handleStateChange = (e) => setDevToolsOpen(Boolean(e.detail?.isOpen));
     window.addEventListener('open-developer-tools', handleOpenDevTools);
-    return () => window.removeEventListener('open-developer-tools', handleOpenDevTools);
+    window.addEventListener('dev-tools-state-change', handleStateChange);
+    return () => {
+      window.removeEventListener('open-developer-tools', handleOpenDevTools);
+      window.removeEventListener('dev-tools-state-change', handleStateChange);
+    };
   }, []);
 
   // Close dropdown on outside click
@@ -83,11 +88,11 @@ const Navbar = ({ onToggleSidebar }) => {
               onClick={() => setDevToolsOpen((prev) => !prev)}
               aria-expanded={devToolsOpen}
               aria-label="Toggle Developer Tools Menu"
-              title="Developer Tools: 18 Essential Technologies"
+              title="Developer Tools: 16 Essential Technologies"
             >
               <span className="dev-tools-icon">🛠️</span>
               <span className="dev-tools-label">Developer Tools</span>
-              <span className="dev-tools-badge">18</span>
+              <span className="dev-tools-badge">16</span>
               <span className="dev-tools-arrow">{devToolsOpen ? '▲' : '▼'}</span>
             </button>
           </div>
@@ -121,6 +126,17 @@ const Navbar = ({ onToggleSidebar }) => {
                       </div>
                     )}
                   </div>
+
+                  {user?.role === 'admin' && (
+                    <Link
+                      to="/admin/dashboard"
+                      className="dropdown-item"
+                      style={{ color: '#f472b6', fontWeight: 700 }}
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <span>🛡️</span> Admin Dashboard
+                    </Link>
+                  )}
 
                   <Link
                     to="/dashboard"

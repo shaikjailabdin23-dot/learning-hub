@@ -88,6 +88,8 @@ const createProject = async (req, res) => {
       features,
       githubUrl,
       demoUrl,
+      image,
+      status,
       challenges,
       solutions,
       lessonsLearned,
@@ -103,7 +105,7 @@ const createProject = async (req, res) => {
 
     const techArray = Array.isArray(technologies)
       ? technologies
-      : (technologies ? technologies.split(',').map((t) => t.trim()) : []);
+      : (technologies ? technologies.split(',').map((t) => t.trim()).filter(Boolean) : []);
 
     const featuresArray = Array.isArray(features)
       ? features
@@ -120,6 +122,8 @@ const createProject = async (req, res) => {
       features: featuresArray,
       githubUrl: githubUrl || '',
       demoUrl: demoUrl || '',
+      image: image || '',
+      status: status || 'Production Ready',
       challenges: challenges || '',
       solutions: solutions || '',
       lessonsLearned: lessonsLearned || '',
@@ -130,7 +134,7 @@ const createProject = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: 'Project created successfully!',
+      message: 'Project created successfully by Administrator!',
       data: populated,
     });
   } catch (error) {
@@ -142,9 +146,9 @@ const createProject = async (req, res) => {
   }
 };
 
-// @desc    Update project
+// @desc    Update project (Admin only)
 // @route   PUT /api/projects/:id
-// @access  Private
+// @access  Private (Admin)
 const updateProject = async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
@@ -156,11 +160,11 @@ const updateProject = async (req, res) => {
       });
     }
 
-    // Verify ownership
-    if (project.user.toString() !== req.user._id.toString()) {
+    // Verify admin role
+    if (req.user.role !== 'admin' && project.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
-        message: 'You are not authorized to edit this project.',
+        message: 'You are not authorized to edit this project. Admin privileges required.',
       });
     }
 
@@ -174,6 +178,8 @@ const updateProject = async (req, res) => {
       features,
       githubUrl,
       demoUrl,
+      image,
+      status,
       challenges,
       solutions,
       lessonsLearned,
@@ -187,6 +193,8 @@ const updateProject = async (req, res) => {
     if (role) project.role = role;
     if (githubUrl !== undefined) project.githubUrl = githubUrl;
     if (demoUrl !== undefined) project.demoUrl = demoUrl;
+    if (image !== undefined) project.image = image;
+    if (status !== undefined) project.status = status;
     if (challenges !== undefined) project.challenges = challenges;
     if (solutions !== undefined) project.solutions = solutions;
     if (lessonsLearned !== undefined) project.lessonsLearned = lessonsLearned;
@@ -221,9 +229,9 @@ const updateProject = async (req, res) => {
   }
 };
 
-// @desc    Delete project
+// @desc    Delete project (Admin only)
 // @route   DELETE /api/projects/:id
-// @access  Private
+// @access  Private (Admin)
 const deleteProject = async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
@@ -235,11 +243,11 @@ const deleteProject = async (req, res) => {
       });
     }
 
-    // Verify ownership
-    if (project.user.toString() !== req.user._id.toString()) {
+    // Verify admin role
+    if (req.user.role !== 'admin' && project.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
-        message: 'You are not authorized to delete this project.',
+        message: 'You are not authorized to delete this project. Admin privileges required.',
       });
     }
 
@@ -247,7 +255,7 @@ const deleteProject = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Project deleted successfully.',
+      message: 'Project deleted successfully by Administrator.',
     });
   } catch (error) {
     console.error('[DeleteProject Error]:', error);

@@ -88,6 +88,9 @@ app.use('/api/quizzes', require('./routes/quizRoutes'));
 app.use('/api/quiz', require('./routes/quizRoutes'));
 app.use('/api/progress', require('./routes/progressRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/activity', require('./routes/activityRoutes'));
+app.use('/api/career', require('./routes/careerRoutes'));
 
 // 404 Handler for Unrecognized Endpoints
 app.use('/api/*', (req, res) => {
@@ -115,6 +118,10 @@ const startServer = async () => {
   try {
     await connectDB();
     await seedData();
+
+    // Initialize scheduled cron jobs
+    const { initWeeklyCron } = require('./services/schedulerService');
+    initWeeklyCron();
   } catch (err) {
     console.error('[Database Initialization Error]:', err.message);
   }

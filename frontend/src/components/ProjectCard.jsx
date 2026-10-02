@@ -1,10 +1,66 @@
 import React from 'react';
 
-const ProjectCard = ({ project, onEdit, onDelete, canEdit = true }) => {
+const ProjectCard = ({ project, onEdit, onDelete, canEdit = false, onOpenFullFrame }) => {
   return (
     <div className="project-card">
+      {project.image && (
+        <div
+          style={{
+            width: '100%',
+            height: '140px',
+            overflow: 'hidden',
+            borderRadius: 'var(--radius-sm)',
+            marginBottom: '0.85rem',
+            background: 'rgba(0, 0, 0, 0.3)',
+          }}
+        >
+          <img
+            src={project.image}
+            alt={project.title}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            onError={(e) => {
+              e.target.parentElement.style.display = 'none';
+            }}
+          />
+        </div>
+      )}
+
       <div className="project-card-header">
-        <span className="badge badge-accent">{project.category || 'Web Projects'}</span>
+        <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span className="badge badge-accent">{project.category || 'Web Projects'}</span>
+          {project.status && (
+            <span
+              style={{
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                padding: '0.12rem 0.5rem',
+                borderRadius: '999px',
+                background:
+                  project.status === 'Production Ready'
+                    ? 'rgba(16, 185, 129, 0.15)'
+                    : project.status === 'Completed'
+                    ? 'rgba(59, 130, 246, 0.15)'
+                    : 'rgba(245, 158, 11, 0.15)',
+                color:
+                  project.status === 'Production Ready'
+                    ? '#34d399'
+                    : project.status === 'Completed'
+                    ? '#60a5fa'
+                    : '#fbbf24',
+                border:
+                  project.status === 'Production Ready'
+                    ? '1px solid rgba(16, 185, 129, 0.3)'
+                    : project.status === 'Completed'
+                    ? '1px solid rgba(59, 130, 246, 0.3)'
+                    : '1px solid rgba(245, 158, 11, 0.3)',
+              }}
+            >
+              {project.status === 'Production Ready' ? '🟢 ' : project.status === 'Completed' ? '✓ ' : '⚡ '}
+              {project.status}
+            </span>
+          )}
+        </div>
+
         {canEdit && (
           <div className="project-crud-actions">
             {onEdit && (
@@ -12,7 +68,8 @@ const ProjectCard = ({ project, onEdit, onDelete, canEdit = true }) => {
                 type="button"
                 className="icon-btn"
                 onClick={() => onEdit(project)}
-                title="Edit Project"
+                title="Edit Project Details"
+                aria-label="Edit Project"
               >
                 ✏️
               </button>
@@ -22,7 +79,8 @@ const ProjectCard = ({ project, onEdit, onDelete, canEdit = true }) => {
                 type="button"
                 className="icon-btn delete"
                 onClick={() => onDelete(project._id)}
-                title="Delete Project"
+                title="Delete Project from Platform"
+                aria-label="Delete Project"
               >
                 🗑️
               </button>
@@ -67,18 +125,29 @@ const ProjectCard = ({ project, onEdit, onDelete, canEdit = true }) => {
       )}
 
       <div className="project-card-actions">
-        <div className="project-links">
-          {project.githubUrl && (
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+        <div className="project-links" style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          {onOpenFullFrame && (
+            <button
+              type="button"
               className="project-link-btn"
-              title="Open GitHub Repository"
+              onClick={() => onOpenFullFrame(project)}
+              style={{
+                borderColor: 'var(--accent)',
+                color: '#c4b5fd',
+                background: 'rgba(108, 99, 255, 0.15)',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                cursor: 'pointer',
+              }}
+              title="Open Project in Full Frame Interactive Viewer"
             >
-              <span>GitHub</span> ↗
-            </a>
+              <span>Full Frame</span>
+              <span style={{ fontSize: '0.9rem' }}>⛶</span>
+            </button>
           )}
+
           {project.demoUrl && (
             <a
               href={project.demoUrl}
@@ -91,9 +160,21 @@ const ProjectCard = ({ project, onEdit, onDelete, canEdit = true }) => {
                 background: 'rgba(16, 185, 129, 0.1)',
                 fontWeight: 600,
               }}
-              title="Open Live Deployment"
+              title="Open Live Deployment in New Tab"
             >
               <span>Live Demo</span> 🚀
+            </a>
+          )}
+
+          {project.githubUrl && (
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="project-link-btn"
+              title="Open GitHub Repository"
+            >
+              <span>GitHub</span> ↗
             </a>
           )}
         </div>

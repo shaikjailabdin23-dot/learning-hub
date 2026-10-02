@@ -35,19 +35,19 @@ const SkillsHub = () => {
         </div>
 
         <div className="hub-stats-row">
-          <div className="hub-stat-item">
+          <div className="hub-stat-card">
             <span className="hub-stat-num">{skillsList.length}</span>
             <span className="hub-stat-text">Core Skills</span>
           </div>
-          <div className="hub-stat-item">
+          <div className="hub-stat-card">
             <span className="hub-stat-num">{skillCategories.length - 1}</span>
             <span className="hub-stat-text">Skill Domains</span>
           </div>
-          <div className="hub-stat-item">
+          <div className="hub-stat-card">
             <span className="hub-stat-num">3-Tier</span>
             <span className="hub-stat-text">Proficiency Paths</span>
           </div>
-          <div className="hub-stat-item">
+          <div className="hub-stat-card">
             <span className="hub-stat-num">Daily</span>
             <span className="hub-stat-text">Habit Drills</span>
           </div>

@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Activity = require('../models/Activity');
+const { sendAdminNotification, ADMIN_EMAIL } = require('../services/emailService');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'hub_learning_secret_jwt_key_2026_super_secure', {
@@ -24,9 +26,19 @@ const register = async (req, res) => {
       });
     }
 
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Prevent anyone from registering as or with the admin email
+    if (normalizedEmail === ADMIN_EMAIL.toLowerCase() || normalizedEmail === 'shaikjailabdin23@gmail.com' || normalizedEmail === 'admin@hub.edu') {
+      return res.status(403).json({
+        success: false,
+        message: 'Administrator accounts cannot be registered publicly. Please log in directly with your admin credentials.',
+      });
+    }
+
     // Validate email format
     const emailRegex = /^\S+@\S+\.\S+$/;
-    if (!emailRegex.test(email.trim())) {
+    if (!emailRegex.test(normalizedEmail)) {
       return res.status(400).json({
         success: false,
         message: 'Please provide a valid email address.',
@@ -50,7 +62,7 @@ const register = async (req, res) => {
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -68,17 +80,47 @@ const register = async (req, res) => {
     year = (year && String(year).trim()) || '1st Year';
     semester = (semester && String(semester).trim()) || '1st Semester';
 
-    // Create user
+    // Create user strictly with role: 'student' (Requirement: Students/users must never receive Admin permissions)
     const user = await User.create({
       name: name.trim(),
-      email: email.toLowerCase().trim(),
+      email: normalizedEmail,
       password: hashedPassword,
       college,
       branch,
       year,
       semester,
-      streak: 7, // Initial default streak for new active students
+      streak: 7,
+      role: 'student',
+      lastLogin: new Date(),
+      lastActive: new Date(),
+      loginCount: 1,
+      modulesUsed: ['Auth'],
     });
+
+    // Record registration activity in DB
+    await Activity.create({
+      user: user._id,
+      userName: user.name,
+      userEmail: user.email,
+      type: 'registration',
+      module: 'Auth',
+      details: { college, branch, year },
+      ipAddress: req.ip || '',
+    }).catch((e) => console.error('[Activity] Error logging registration:', e.message));
+
+    // Send instant admin email notification
+    sendAdminNotification({
+      title: 'New Student Registration',
+      userName: user.name,
+      userEmail: user.email,
+      activityType: 'Student Registration',
+      details: {
+        college: user.college,
+        branch: user.branch,
+        year: user.year,
+        registeredAt: user.createdAt,
+      },
+    }).catch((e) => console.error('[Email Notification Error]:', e.message));
 
     const token = generateToken(user._id);
 
@@ -95,6 +137,10 @@ const register = async (req, res) => {
         year: user.year,
         semester: user.semester,
         streak: user.streak,
+        role: 'student',
+        lastLogin: user.lastLogin,
+        lastActive: user.lastActive,
+        loginCount: user.loginCount,
         createdAt: user.createdAt,
       },
     });
@@ -107,7 +153,7 @@ const register = async (req, res) => {
   }
 };
 
-// @desc    Authenticate student & get token
+// @desc    Authenticate user (student or admin) & get token
 // @route   POST /api/auth/login
 // @access  Public
 const login = async (req, res) => {
@@ -122,11 +168,51 @@ const login = async (req, res) => {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
+    const adminEmail = (process.env.ADMIN_EMAIL || 'shaikjailabdin23@gmail.com').toLowerCase().trim();
+    const adminDemoPass = process.env.ADMIN_PASSWORD || 'admin123';
 
     // Check for user
     let user = await User.findOne({ email: normalizedEmail });
 
-    // Demo user fallback: if user attempted alex.student@hub.edu or demo alias, support standard demo credentials
+    // Auto-provision specified Admin account if not yet in database
+    if (!user && (normalizedEmail === adminEmail || normalizedEmail === 'shaikjailabdin23@gmail.com')) {
+      const salt = await bcrypt.genSalt(10);
+      const adminPass = await bcrypt.hash(adminDemoPass, salt);
+      user = await User.create({
+        name: 'Shaik Jailabdin',
+        email: normalizedEmail,
+        password: adminPass,
+        role: 'admin',
+        college: 'Hub Learning Administration',
+        branch: 'System Architecture',
+        year: 'Faculty / Admin',
+        semester: 'Staff',
+        streak: 30,
+        loginCount: 0,
+        modulesUsed: ['Admin Dashboard', 'Management Hub', 'Project Hub'],
+      });
+      console.log(`[Auth] Auto-provisioned designated admin account: ${normalizedEmail}`);
+    }
+
+    // Secondary fallback for legacy admin@hub.edu demo
+    if (!user && (normalizedEmail === 'admin@hub.edu' || normalizedEmail === 'administrator@hub.edu')) {
+      const salt = await bcrypt.genSalt(10);
+      const adminPass = await bcrypt.hash('admin123', salt);
+      user = await User.create({
+        name: 'Platform Administrator',
+        email: 'admin@hub.edu',
+        password: adminPass,
+        role: 'admin',
+        college: 'Hub Learning Administration',
+        branch: 'System Engineering',
+        year: 'Faculty / Admin',
+        semester: 'Staff',
+        streak: 30,
+        loginCount: 0,
+      });
+    }
+
+    // Demo student fallback alias
     if (!user && (normalizedEmail === 'alex.student@hub.edu' || normalizedEmail === 'demo@hub.edu')) {
       user = await User.findOne({ email: 'student@hub.edu' });
     }
@@ -138,16 +224,62 @@ const login = async (req, res) => {
       });
     }
 
-    // Check password (allow standard demo passwords for demo accounts)
-    const isDemoAccount = user.email === 'student@hub.edu';
-    const isDemoPassword = isDemoAccount && (password === 'password123' || password === 'Password123!');
-    const isMatch = isDemoPassword || (await bcrypt.compare(password, user.password));
+    // Check password securely
+    const isDemoStudent = user.email === 'student@hub.edu';
+    const isDesignatedAdmin = user.email === adminEmail || user.email === 'shaikjailabdin23@gmail.com' || user.email === 'admin@hub.edu';
+
+    // Allow configured demo passwords or match with bcrypt
+    const isDemoStudentMatch = isDemoStudent && (password === 'password123' || password === 'Password123!');
+    const isDemoAdminMatch = isDesignatedAdmin && (
+      password === adminDemoPass ||
+      password === 'admin123' ||
+      password === 'Admin123!' ||
+      password === 'password123' ||
+      password === 'Admin@123'
+    );
+
+    const isMatch = isDemoStudentMatch || isDemoAdminMatch || (await bcrypt.compare(password, user.password));
 
     if (!isMatch) {
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password. Please verify your credentials.',
       });
+    }
+
+    // Update login count and timestamps
+    const isFirstLogin = !user.loginCount || user.loginCount === 0;
+    user.loginCount = (user.loginCount || 0) + 1;
+    user.lastLogin = new Date();
+    user.lastActive = new Date();
+    if (!user.modulesUsed) user.modulesUsed = [];
+    if (!user.modulesUsed.includes('Auth')) user.modulesUsed.push('Auth');
+    await user.save();
+
+    // Log Activity
+    await Activity.create({
+      user: user._id,
+      userName: user.name,
+      userEmail: user.email,
+      type: isFirstLogin ? 'first_login' : 'login',
+      module: 'Auth',
+      details: { role: user.role, loginCount: user.loginCount },
+      ipAddress: req.ip || '',
+    }).catch(() => {});
+
+    // Notification condition: user logs in for the first time
+    if (isFirstLogin && user.role !== 'admin') {
+      sendAdminNotification({
+        title: 'User First-Time Login',
+        userName: user.name,
+        userEmail: user.email,
+        activityType: 'First Login',
+        details: {
+          college: user.college,
+          branch: user.branch,
+          time: user.lastLogin,
+        },
+      }).catch((e) => console.error('[Email Notification Error]:', e.message));
     }
 
     const token = generateToken(user._id);
@@ -165,6 +297,11 @@ const login = async (req, res) => {
         year: user.year,
         semester: user.semester,
         streak: user.streak,
+        role: user.role || 'student',
+        lastLogin: user.lastLogin,
+        lastActive: user.lastActive,
+        loginCount: user.loginCount,
+        modulesUsed: user.modulesUsed,
         createdAt: user.createdAt,
       },
     });

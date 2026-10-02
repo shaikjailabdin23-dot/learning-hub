@@ -20,15 +20,24 @@ const DeveloperToolCard = ({ tool, onLearnMore }) => {
       </div>
 
       <div className="dev-card-footer">
-        <span className="dev-card-group-pill">{tool.group}</span>
+        <a
+          href={tool.websiteUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="dev-open-btn"
+          aria-label={`Open ${tool.name} website`}
+        >
+          <span>Open Tool</span>
+          <span className="dev-arrow-icon">↗</span>
+        </a>
         <button
           type="button"
           className="dev-learn-more-btn"
           onClick={() => onLearnMore(tool)}
           aria-label={`Learn more about ${tool.name}`}
         >
-          <span>Learn More</span>
-          <span className="dev-arrow-icon">→</span>
+          <span>Learn</span>
+          <span className="dev-arrow-icon">📖</span>
         </button>
       </div>
     </div>

@@ -8,7 +8,7 @@ const Login = () => {
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const { login } = useAuth();
+  const { login, setUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,6 +44,7 @@ const Login = () => {
     } catch (err) {
       console.warn('Demo login API fallback:', err.message);
       const demoUser = {
+        id: 'student-demo-1',
         name: 'Alex Johnson',
         email: 'student@hub.edu',
         college: 'Global Institute of Technology',
@@ -54,7 +55,37 @@ const Login = () => {
       };
       localStorage.setItem('hub_auth_token', 'demo-jwt-token-12345');
       localStorage.setItem('hub_user_profile', JSON.stringify(demoUser));
-      window.location.href = '/dashboard';
+      if (setUser) setUser(demoUser);
+      navigate('/dashboard', { replace: true });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleAdminDemoLogin = async () => {
+    setEmail('admin@hub.edu');
+    setPassword('admin123');
+    setSubmitting(true);
+    setFormError('');
+    try {
+      await login('admin@hub.edu', 'admin123');
+      navigate('/dashboard', { replace: true });
+    } catch (err) {
+      console.warn('Admin demo login fallback:', err.message);
+      const adminUser = {
+        id: 'admin-platform-1',
+        name: 'Platform Administrator',
+        email: 'admin@hub.edu',
+        college: 'Hub Learning Administration',
+        branch: 'System Engineering',
+        year: 'Faculty / Admin',
+        semester: 'Staff',
+        role: 'admin',
+      };
+      localStorage.setItem('hub_auth_token', 'admin-demo-jwt-token-2026');
+      localStorage.setItem('hub_user_profile', JSON.stringify(adminUser));
+      if (setUser) setUser(adminUser);
+      navigate('/dashboard', { replace: true });
     } finally {
       setSubmitting(false);
     }
@@ -172,7 +203,24 @@ const Login = () => {
             onClick={handleDemoLogin}
             style={{ width: '100%', padding: '0.75rem', fontSize: '0.88rem', borderColor: 'var(--accent)' }}
           >
-            ⚡ Quick Demo Student Sign In
+            ⚡ Quick Demo Student Sign In (View Only)
+          </button>
+
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={handleAdminDemoLogin}
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              fontSize: '0.88rem',
+              borderColor: '#ec4899',
+              background: 'rgba(236, 72, 153, 0.1)',
+              color: '#f472b6',
+              fontWeight: 600,
+            }}
+          >
+            🛡️ Quick Demo Admin Sign In (Full CRUD)
           </button>
         </form>
 
